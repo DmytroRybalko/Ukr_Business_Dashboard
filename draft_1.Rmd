@@ -1,0 +1,80 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Read xml-file:
+```{r}
+library(XML)
+library(tidyverse)
+
+raw_data <- xmlParse("./data/test/short_base_data2.xml")
+#raw_data <- xmlParse("./data/raw/base_data.xml")
+#test_data <- xmlParse("./data/test/test_1.xml")
+bond <- xmlParse("./data/test/bond.xml")
+```
+
+Make function that extract data from particular nodes into dataframe
+```{r}
+node2dataframe <- function(xml_doc, col_names, nodes) {
+  df <- map_dfc(nodes, function(x) {
+    getNodeSet(xml_doc, x) %>% 
+      xmlToDataFrame(nodes = ., collectNames = T, homogeneous = T, stringsAsFactors = F)
+    }
+  )
+  names(df) <- col_names
+  return(df)
+}
+```
+Get dataframe
+```{r}
+# Vector of nodes to extract from xml
+nodes <- c("//Placemark/name", "//Placemark/description", "//Point/coordinates")
+# Vector of column names for dataframe
+col_names <- c("name", "description", "coordinates")
+df0 <- node2dataframe(raw_data, col_names, nodes)
+```
+
+### TEST ZONE
+Explore file structure:
+```{r}
+root <- xmlRoot(raw_data)
+# Root's element name:
+xmlName(root)
+# Number of root's children:
+xmlSize(root)
+```
+
+
+Next step
+```{r}
+l2 <- getNodeSet(raw_data, "//Placemark/description")
+l3 <- getNodeSet(raw_data, "//Point/coordinates")
+```
+
+
+
+```{r}
+getNodeSet(raw_data, "//Placemark/name | //Point/coordinates")
+df <- xmlToDataFrame(nodes = getNodeSet(raw_data, "//Placemark/name | //Point/coordinates"),
+                     collectNames = FALSE,
+                     homogeneous = T)
+```
+
+
+```{r}
+a1 <- read_xml("./data/raw/short_base_data2.xml")
+```
+
+Show all types of business:
+```{r}
+xpathSApply(raw_data, "//Folder/name")
+
+```
+
+
+
