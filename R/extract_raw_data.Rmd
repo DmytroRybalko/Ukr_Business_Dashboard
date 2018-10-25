@@ -1,0 +1,120 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load libraries
+```{r}
+library(XML)
+library(tidyverse)
+```
+
+# Set helper function
+
+## 1.Function that extract data from particular nodes into dataframe
+```{r}
+node2dataframe <- function(xml_doc, col_names, nodes, company_type) {
+  # xml_doc - xmlParse(file) object
+  # col_names - names for dataframe columns
+  # nodes - nodes of doc object that contain necessary information
+  # company_type - types of companies which is id's attributes of node <Folder>
+  
+  # Define the number of companies for each type
+  company_num <- getNodeSet(xml_doc,
+                            sprintf("//Folder[@id='%s']//name[last()]",
+                                    company_type)) %>% length()
+  
+  df <- map_dfc(nodes, function(x) {
+    getNodeSet(xml_doc, x) %>% 
+      xmlToDataFrame(nodes = ., collectNames = F,
+                     homogeneous = T, stringsAsFactors = F)}) %>% 
+    bind_cols('company_type' = rep(company_type, each = company_num), .)
+  
+  names(df) <- c('company_type', col_names)
+  return(df)
+}
+```
+## Test node2dataframe function
+```{r test_node2dataframe include=FALSE}
+# Test file
+node2dataframe_data <- xmlParse("../data/test/base_data2.xml")
+
+# Vector of nodes to extract from xml
+t1_nodes <- c("//Placemark/name", "//Placemark/description", "//Point/coordinates")
+
+# Vector of column names for dataframe
+t1_col_names <- c("name", "description", "coordinates")
+
+# Get list of companies types which is id's attributes of node <Folder>
+t1_company_type <- xpathSApply(node2dataframe_data, "//Folder", xmlGetAttr, "id")
+
+# Final tibble:
+node2dataframe(node2dataframe_data,
+               t1_col_names,
+               nodes = sprintf("//child::Folder[@id='%s']%s", t1_company_type[1], t1_nodes),
+               company_type = t1_company_type[1]) %>% View()
+```
+## 2. Function that extract data from parent node <Folder>
+```{r}
+collect_nodes <- function(doc, col_names, nodes) {
+  # doc - xmlParse(file) object
+  # col_names - names for dataframe columns
+  # nodes - nodes of doc object that contain necessary information
+  
+  # Get list of companies types which is id's attributes of node <Folder>
+  company_type <- xpathSApply(doc, "//Folder", xmlGetAttr, "id")
+  
+  # Make final tibble
+  map_dfr(company_type, function(x) {
+    sprintf("//child::Folder[@id='%s']%s", x, nodes) %>% #"//child::Folder[@id='%s']%s" extract all childs of parent node
+      node2dataframe(doc, col_names, nodes = ., company_type = x)})
+}
+```
+## Test collect_node function
+```{r test_collect_node include=FALSE}
+# Test file
+collect_node_data <- xmlParse("../data/test/base_data2.xml")
+
+# Vector of nodes to extract from xml
+t2_nodes <- c("//Placemark/name", "//Placemark/description", "//Point/coordinates")
+
+# Vector of column names for dataframe
+t2_col_names <- c("name", "description", "coordinates")
+
+# Result:
+collect_nodes(collect_node_data, t2_col_names, t2_nodes) %>% View()
+```
+
+# Extract data
+
+Load data files:
+```{r}
+raw_data <- xmlParse("../data/raw/base_data.xml")
+```
+Let's overview <Folder id="<company_type>"> nodes:
+```{r}
+xpathSApply(raw_data, "//Folder", xmlGetAttr, "id")
+```
+Let's overview snippet of raw_data from which we will extract data (from <name>, <description> and <coordinates> nodes):
+```{r}
+getNodeSet(raw_data, "//child::Folder[@id='Industrial_parks']//Placemark[position()=1]")
+```
+### Extract data from xml file:
+```{r}
+# Vector of nodes to extract from xml
+nodes <- c("//Placemark/name", "//Placemark/description", "//Point/coordinates")
+
+# Vector of column names for dataframe
+col_names <- c("name", "description", "coordinates")
+
+# Get final tibble
+df0 <- collect_nodes(raw_data, col_names, nodes)
+```
+Save data to file
+```{r eval=FALSE}
+saveRDS(df0, "../data/processing/raw_data.rds")
+```

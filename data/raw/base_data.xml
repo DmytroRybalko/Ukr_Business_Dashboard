@@ -1,65 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
   <Document>
-    <name>Підприємства, відкриті в Україні з початку 2015 року</name>
-    <!--description><![CDATA[Наша спільнота в facebook http://bit.ly/2l4cjxY. Повідомити про об'єкт http://bit.ly/2Mb7LAh]]></description-->
-    <Style id="icon-1899-DB4436-labelson">
-      <IconStyle>
-        <color>ff3644db</color>
-        <scale>1</scale>
-        <Icon>
-          <href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
-        </Icon>
-        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
-      </IconStyle>
-    </Style>
-    <Style id="icon-503-DB4436-normal">
-      <IconStyle>
-        <color>ff3644db</color>
-        <scale>1.1</scale>
-        <Icon>
-          <href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
-        </Icon>
-        <hotSpot x="16" xunits="pixels" y="32" yunits="insetPixels"/>
-      </IconStyle>
-      <LabelStyle>
-        <scale>0</scale>
-      </LabelStyle>
-    </Style>
-    <Style id="icon-503-DB4436-highlight">
-      <IconStyle>
-        <color>ff3644db</color>
-        <scale>1.1</scale>
-        <Icon>
-          <href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
-        </Icon>
-        <hotSpot x="16" xunits="pixels" y="32" yunits="insetPixels"/>
-      </IconStyle>
-      <LabelStyle>
-        <scale>1.1</scale>
-      </LabelStyle>
-    </Style>
-    <StyleMap id="icon-503-DB4436">
-      <Pair>
-        <key>normal</key>
-        <styleUrl>#icon-503-DB4436-normal</styleUrl>
-      </Pair>
-      <Pair>
-        <key>highlight</key>
-        <styleUrl>#icon-503-DB4436-highlight</styleUrl>
-      </Pair>
-    </StyleMap>
-    <Style id="icon-503-DB4436-labelson">
-      <IconStyle>
-        <color>ff3644db</color>
-        <scale>1.1</scale>
-        <Icon>
-          <href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
-        </Icon>
-        <hotSpot x="16" xunits="pixels" y="32" yunits="insetPixels"/>
-      </IconStyle>
-    </Style>
-    <Folder>
-      <name>Індустріальні парки</name>
+    <Folder id="Industrial_parks">
       <Placemark>
         <name><![CDATA[ІП "Сігма парк Яричів"]]></name>
         <description><![CDATA[<a href="https://www.youtube.com/watch?v=h4F9N4uMUws"><img src="https://img.youtube.com/vi/h4F9N4uMUws/hqdefault.jpg" height="200" width="auto" /></a><br><br><a href="https://www.youtube.com/embed/h4F9N4uMUws">https://www.youtube.com/embed/h4F9N4uMUws</a><br><br>Ініціатор створення: ТОВ "Індустріальний парк "СІГМА Парк Яричів"<br>Офіційний сайт: http://spy.estate<br>Площа: 15,71 га<br>Ємність парку: 10 великих і 30 малих підприємств<br>Створений на 50 років<br>Кількість робочих місць: 6500<br>Додаткова інфо: https://goo.gl/6eMe1x, https://goo.gl/N6ZEjF<br>Дата початку будівництва: квітень 2017 р.<br>Дата включення до реєстру: 04.09.2017 р.<br><br><img src="https://lh4.googleusercontent.com/mHzg00fwRqdtcOK7m5JLuYXpHRe-inPoL-zD40yXTjC2ZaLJ7_kbseC-a8GjYZBPCtJ2ASrSwQBsSkvgmM7145pRmmBkeXipNfGNnjv0_pKJPppc1ltkiRowQOsU8tU" height="200" width="auto" /><br><br><img src="https://lh6.googleusercontent.com/Mt1HqznTtZ3w_dkphJ5Wd-m0FuvOcBrjNGHU4FPYTyksyVfj78IVkCpsfL0iMLf1VCMf8naRV0YC9titydqD76ZAM-0jwBDqpEvvjsLDPhvfYrSjmx1BzsVhM3JXAw" height="200" width="auto" />]]></description>
@@ -76,8 +17,7 @@
         </Point>
       </Placemark>
       <Placemark>
-        <name><![CDATA[ІП "Павлоград"
-]]></name>
+        <name><![CDATA[ІП "Павлоград"]]></name>
         <description><![CDATA[<img src="https://lh3.googleusercontent.com/l18mbFBhyDtdm_tXq3PjRUucU17PWI2EuOY2k5-NhfSutS1IzBgmNf9lC6IPtsso-ZriquUcsntKLOQqqW4zbkPoPk_5y_qzCflFTIRk05wweSWmqWrPgsqmrkhrGNk" height="200" width="auto" /><br><br>Керуюча компанія: держпідприємство Дніпропетровської ОДА "Інвестиційно-інноваційний центр"<br>Площа: сім секторів: для машинобудування відведено 120 га, приміщень під виробництво будматеріалів - 50 га, переробку сільгосптоварів - 25 га, легкої промисловості та Hi-tech технологій - 20 га<br>Створений на 30 років<br>Кількість робочих місць: 5000<br>Додаткова інфо: https://goo.gl/KyBxws, https://goo.gl/RZcIjH<br>Дата включення в реєстр: 14.02.2017 р.<br><br><img src="https://lh5.googleusercontent.com/EyJc6EqSdiYdl0lsp-RDOmuhFzsiseEmMLeKah86_m4rvzANkW2dDR082MbymIwQlgrlLMTxzBAdvM6KebSU0oALlZ9Yutwn24jbEnI9-3XV7KpRMcUBjbAVcpTn6xM" height="200" width="auto" />]]></description>
         <styleUrl>#icon-503-DB4436</styleUrl>
         <ExtendedData>
@@ -389,8 +329,7 @@
         </Point>
       </Placemark>
     </Folder>
-    <Folder>
-      <name>Діючі заводи</name>
+    <Folder id="Working_Factories">
       <Placemark>
         <name>Біогазовий завод</name>
         <description><![CDATA[<img src="https://lh3.googleusercontent.com/proxy/EQ-4PTxlapD0x9BVKniIuHxZmlhuo8n3Om7J_HmZTb0zlnqMzSNoe_ytgTeYM-rF8qgfqVTja6wtktWTY6IUUg" height="200" width="auto" /><br><br>Потужність: 300 кВт/год;<br>Додаткова інфо: https://goo.gl/GyorWx<br>Дата відкриття: 10.2016 р.]]></description>
@@ -2996,11 +2935,9 @@
         </Point>
       </Placemark>
     </Folder>
-    <Folder>
-      <name>Заводи, які будуються</name>
+    <Folder id="Future_Factories">
       <Placemark>
-        <name>Завод з сушіння овочів
-</name>
+        <name>Завод з сушіння овочів</name>
         <description><![CDATA[<img src="https://lh4.googleusercontent.com/qMEoKJxzEa8bPm-4SwTnuT0izM0L6JZKuL0TyxcjvH7Dre_wMTOdPcBa8Y8m78DHaLbxzvaD2VWKgnU2RNjQOBlb0ARjPUBTBClbzDFg4jIiRPIHVoRB6-bQV5orHbc" height="200" width="auto" /><br><br>Власник: група компаній "Agrofusion"<br>Офіційний сайт: http://www.inagro.ua/uk/<br>Кількість робочих місць: 40<br>Додаткова інфо: http://bit.ly/2ohqDmG<br>Дата початку будівництва: 27.08.2018 р.<br>Дата відкриття: 2019 р.]]></description>
         <styleUrl>#icon-503-DB4436-labelson</styleUrl>
         <ExtendedData>
@@ -3724,8 +3661,7 @@
         </Point>
       </Placemark>
     </Folder>
-    <Folder>
-      <name>Електростанції</name>
+    <Folder id="Power_Stations">
       <Placemark>
         <name><![CDATA[Сонячна електростанція "Лео-Солар-Енерджі"]]></name>
         <description><![CDATA[<a href="https://www.youtube.com/watch?v=kagsbtQboV4"><img src="https://img.youtube.com/vi/kagsbtQboV4/hqdefault.jpg" height="200" width="auto" /></a><br><br><a href="https://www.youtube.com/embed/kagsbtQboV4">https://www.youtube.com/embed/kagsbtQboV4</a><br><br>Власник: компанії ТзОВ "Карпати-Логістик" та ПП "Арт-Енерго"<br>Офіційний сайт: http://artenergo.com<br>Місцезнаходження: Львівська обл., Жовківський р-н, с. Малехів, вул. Т. Дороша, 20а<br>Сума інвестицій: 30 млн.грн.<br>Потужність: І черга - 1 МВт; ІІ черга - 2,5 МВт<br>Кількість модулів: 3705<br>Площа ФЕС: 1,6 га<br>Кількість робочих місць: 3<br>Додаткова інфо: https://goo.gl/ZqxoEF<br>Дата початку будівництва: 10.2017 р.<br>Дата відкриття: І черга - 15.12.2017 р.; ІІ черга - 2018 р.<br><br><img src="https://lh5.googleusercontent.com/nEtLFzyeiEAaEVJPfFwC1Tbd2Y__-8KIVnRsHbBiLuusgpcRhTYTPbahdXGuf4O3fqIt4INiKTybNLTY5ANem2XqlOmzEDB7YHvp0f-gXILaRh-nzJMbp7EM5JcO54k" height="200" width="auto" /><br><br><img src="https://lh3.googleusercontent.com/OAod5QaReHpH9gJ2XQqsB3394Zjq8vqtJIgxo4S9kvshfzxZLQwlJGdxm5Pz21lz-hnD5yOSvZXGov0s11iQAFZ8IqFL-U3Tbmm-tnD1yFTlYg39_8PDJCoRTnPdkA" height="200" width="auto" /><br><br><img src="https://lh5.googleusercontent.com/XaoFWNEeJ9de7nU-JfhB3FbTLawZEQj8-cpXCBy_WmrqiLuQU0OqqVVHKUEocsNTz4kmCJQPLLWzyBe4hv88Jgo1QDEYSe7Qu38a6AWXa5Jbwf8I4gfdsjSf60oahVc" height="200" width="auto" /><br><br><a href="https://www.youtube.com/watch?v=SSb6hRn-G5U"><img src="https://img.youtube.com/vi/SSb6hRn-G5U/hqdefault.jpg" height="200" width="auto" /></a><br><br><a href="https://www.youtube.com/embed/SSb6hRn-G5U">https://www.youtube.com/embed/SSb6hRn-G5U</a>]]></description>
@@ -6403,8 +6339,7 @@
         </Point>
       </Placemark>
     </Folder>
-    <Folder>
-      <name>Елеватори/термінали</name>
+    <Folder id="Elevators_Terminals">
       <Placemark>
         <name>Елеватор</name>
         <description><![CDATA[<img src="https://lh4.googleusercontent.com/TlN1qAkbqI4vINDIspoNNcU6GoDfQL6_2porCFaGqSDDPQQ5rNKzIoiW81OiVr9Kiyo0BhDBvX0lYItasKVSAbNKgLmuzP_p23Ku5EiozTh_LZaWmppCmblmuC7f4xw" height="200" width="auto" /><br><br>Хлібоприймальний комплекс: приймання зерна: 800-1000 т/добу з автомобільного транспорту; 420- 520 т/добу - з залізничного; відвантаження зерна: 600 т/добу на автомобільний транспорт; 900-1000 т/добу - на залізничний; сушіння зерна: 700-800 т/добу; очищення зерна: 300-400 т/добу<br>Власник: ТОВ "Круп'яний Дім"<br>Потужність: 50 тис. т<br>Додаткова інфо: <br>Дата відкриття: 2015 р.<br><br><img src="https://lh6.googleusercontent.com/PXoIPTKGTufdBRNoAyPWq9Jc43WBHnBmL6M5JCg7AaPJHnkVnM4cKFWJpqDfzOJky4deZtiYQ4AStBOVh6AZ0EUpOhOEnOjFZ7D1ARNOOisW6-y7faIbm47bPSSbbAE" height="200" width="auto" /><br><br><img src="https://lh3.googleusercontent.com/Dd_am61zhBl_UhYxl54CjD7vmTYtcy9ozigc6rinQnu9rapy3nPc5VvQ4puytD0qdtiPgYpScHSJAcsY_cNitdeeQEoFjCSKgt5mILnThnQ5DcV1MNlH4024-j_eITL-" height="200" width="auto" /><br><br><img src="https://lh4.googleusercontent.com/5o_WtJmQN5zwu0PmCPePB82pM1CybX1f-i-TaKqE88tOPoGajty1MephnoUbdRYpPruvSodVF3O91fIPzSqPW3JoBpVPOQdhMBZ_uyBzK74gREqNZuv2Zt8FUjzCNoPs" height="200" width="auto" />]]></description>
@@ -7394,8 +7329,7 @@
         </Point>
       </Placemark>
     </Folder>
-    <Folder>
-      <name>Газові родовища</name>
+    <Folder id="Gas_Fields">
       <Placemark>
         <name>Колодницьке газове родовище</name>
         <description><![CDATA[<a href="https://www.youtube.com/watch?v=QKKhRcBCA18"><img src="https://img.youtube.com/vi/QKKhRcBCA18/hqdefault.jpg" height="200" width="auto" /></a><br><br><a href="https://www.youtube.com/embed/QKKhRcBCA18">https://www.youtube.com/embed/QKKhRcBCA18</a><br><br>Бурові роботи здійснює: ТОВ "Бурова компанія "Горизонти"<br>Додаткова інфо: https://goo.gl/0axKlG<br>Дата відкриття: 03.11.2016 р.<br>Дебіт газу: 100 тис . м3/добу]]></description>
@@ -7489,8 +7423,7 @@
         </Point>
       </Placemark>
     </Folder>
-    <Folder>
-      <name>Інші</name>
+    <Folder id="Others">
       <Placemark>
         <name>Забійний цех</name>
         <description><![CDATA[<img src="https://lh4.googleusercontent.com/mDhWYQif1jxag805gsbzkm8PJpuSluCwblgLk5dOlOW--j_QvxyTeeCMUpcSEm0js-ScksNVa_n6HwPUapA2brRPBBmohpnxiDwYWvCVReqCqG8UOofOSY3PSVeqa1g" height="200" width="auto" /><br><br>Власник: ПП "Глиняни Агро"<br>Сума інвестицій: 6 млн грн.<br>Потужність: 250 голів свиней за добу<br>Додаткова інфо: https://goo.gl/NzUNCV<br>Дата відкриття: 09.11.2017 р.<br><br><a href="https://www.youtube.com/watch?v=SFAXHgQXg-M"><img src="https://img.youtube.com/vi/SFAXHgQXg-M/hqdefault.jpg" height="200" width="auto" /></a><br><br><a href="https://www.youtube.com/embed/SFAXHgQXg-M">https://www.youtube.com/embed/SFAXHgQXg-M</a>]]></description>
@@ -7558,8 +7491,7 @@
         </Point>
       </Placemark>
     </Folder>
-    <Folder>
-      <name>Тваринницькі приміщення</name>
+    <Folder id="Livestock_Rooms">
       <Placemark>
         <name>Інкубаторна станція</name>
         <description><![CDATA[Власник: Куций П.В.<br>Сума інвестицій: 2,1 млн. грн.<br>Потужність: 50 тис. курячих та 30 тис. гусячих яєць <br>Кількість робочих місць: 5<br>Додаткова інфо: http://bit.ly/2vsOG5j<br>Дата початку будівництва: 2015 р.<br>Дата відкриття: 2016 р.]]></description>
