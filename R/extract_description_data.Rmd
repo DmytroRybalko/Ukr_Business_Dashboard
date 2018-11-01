@@ -1,0 +1,64 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(XML)
+library(rvest)
+library(tidyverse)
+library(stringr)
+library(sf)
+```
+Get data from tibble:
+```{r}
+raw_data <- readRDS("../data/processing/raw_data.rds")
+```
+
+# 1.Geocoding
+
+## Get data with region's names
+```{r}
+regions_data <- readRDS("../data/raw/gadm36_UKR_1_sf.rds")
+```
+Add ukrainians names of regions:
+```{r}
+regions_data$NL_NAME_1 <- c("Черкаська", "Чернігівська", " Чернівецька",
+                            "АР Крим", "Дніпропетровська", "Донецька",
+                            "Івано-Франківська", "Харківська", "Херсонська",
+                            "Хмельницька", "Київська", "Київ", "Кіровоградська",
+                            "Львівська", "Луганська", "Миколаївська", "Одеська", "Полтавська",
+                            "Рівненська", "Севастопіль", "Сумська", "Тернопільська",
+                            "Закарпатська", "Вінницька", "Волинська", "Запорізька",
+                            "Житомирська")
+```
+
+## Get regions according to places that contained in that regions
+```{r}
+geocoding_data <- raw_data %>% 
+  rename(old_coordinates = coordinates) %>% 
+  mutate(coordinates = map(old_coordinates, function(x) {
+    
+    # get coordinates from string "\n  24.2609999,49.911092,0\n "
+    lon <- str_extract(x, "(\\d\\d.\\d+)") %>%
+      formatC(digits = 6, format = "f") %>% 
+      as.numeric()
+    lat <- str_extract(x, "(?<=,)(\\d\\d.\\d+)") %>%
+      formatC(digits = 6, format = "f") %>% 
+      as.numeric()
+    
+    # transform pair coordinates to point object
+    return(map2(lon, lat, ~st_point(c(.x, .y))) %>%
+           st_sfc(crs = 4326))
+    }),
+    
+    # find regions that contains corresponding points
+    region = map_chr(coordinates, .f = function(x) {
+      regions_data[which(st_intersects(regions_data$geometry, x, sparse = F)), ]$NL_NAME_1})) %>% 
+  select(-old_coordinates, coordinates)
+```
+
