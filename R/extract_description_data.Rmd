@@ -62,3 +62,79 @@ geocoding_data <- raw_data %>%
   select(-old_coordinates, coordinates)
 ```
 
+# 2. Extract working places
+
+```{r}
+geocoding_data %>% 
+  mutate(working_place = str_extract(raw_data$description,
+                                     "Кількість робочих місць:(\\s\\d+)") %>%
+           str_extract('\\d+$') %>% as.numeric()) -> work_data
+```
+
+# 3. Extract info about amount of investments:
+
+```{r}
+work_data %>% 
+  mutate(`investments, milliom UAH` = map_chr(.$description, function(x) {
+        invest <- str_extract(x, "(\\s\\d+\\s[а-я]+(.|\\s|.\\s)(грн|€|\\$))")
+        # Get amount
+        amount <- str_extract(invest, "\\d+") %>% as.numeric()
+        # Get volume
+        volume <- str_extract(invest, "(млн|тис)")
+        # Correct amount depending on volume
+        amount <- ifelse(volume == "тис", amount * 0.001, amount) %>% as.numeric()
+        # Get currency
+        currency <- str_extract(invest, "(грн|€|\\$)")
+        # Coerce amount to UAH  
+        amount <- ifelse(!is.na(currency), switch(currency,
+                                                  "$" = amount * 28,
+                                                  "€" = amount * 32,
+                                                  "грн" = amount),
+                         NA)
+  }
+  ) %>% as.numeric()) -> investment_data
+```
+
+# 4. Make final tibble with replacing \r\n symbols from "name" column:
+
+```{r}
+final_tibble <- investment_data %>% 
+  select(-description, - coordinates) %>% 
+  mutate_at(vars(name), funs(gsub("[\r\n]", "", .)))
+
+saveRDS(final_tibble, file = "../data/processing/final_data.rds")
+```
+
+Make tibble with Ukrainian titles:
+
+```{r}
+final_tibble %>% 
+  rename(`Тип підприємства` = company_type, Підприємство = name,
+         Область = region, `Кіл-ть робочих місць` = working_place,
+         `Сума інвестицій, млн.грн` = `investments, milliom UAH`) %>% 
+  mutate(`Тип підприємства` = map_chr(.$`Тип підприємства`, switch,
+    "Industrial_parks" = "Індустріальні парки",
+    "Working_Factories" = "Діючи заводи",
+    "Future_Factories" = "Заводи, які будуються",
+    "Power_Stations" = "Електростанції",
+    "Elevators_Terminals" = "Елеватори/термінали",
+    "Gas_Fields" = "Газові родовищ",
+    "Others" = "Інші",
+    "Livestock_Rooms" = "Тваринницькі приміщення")
+    ) %>% 
+  saveRDS(file = "../data/processing/final_ukr_data.rds")
+```
+
+# 5. Write csv-file:
+
+```{r}
+readRDS("../data/processing/final_data.rds") %>% 
+  write_delim("../data/processing/final_data.csv", delim = ";")
+```
+
+With Ukrainian titles:
+```{r}
+readRDS("../data/processing/final_ukr_data.rds") %>% 
+  write_delim("../data/processing/final_ukr_data.csv", delim = ";")
+```
+
