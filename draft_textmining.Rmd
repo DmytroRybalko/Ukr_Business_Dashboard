@@ -1,0 +1,63 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Тут буду шукати цікаві взаємозв'язки між назвою підприємства і областю, в якій воно знаходиться
+Допоміжні ресурси:
+1) https://www.tidytextmining.com
+2) Learning Social Media Analyticks with R
+
+```{r}
+library(tidyverse)
+library(wordcloud)
+library(tm)
+library(tidytext)
+```
+Load data:
+```{r}
+df0 <- readRDS("./data/processing/final_ukr_data.rds")
+```
+Try to use wordcloud
+```{r}
+wordcloud(df0$Підприємство)
+```
+Перевірка чи працює tidytext:)
+```{r}
+df0 %>% 
+  unnest_tokens(word, 'Підприємство') %>% View()
+```
+Розподіл слів в назві підприємств:
+```{r}
+df0 %>% 
+  unnest_tokens(word, 'Підприємство') %>%
+  count(word, sort = T) %>% View()
+```
+# Подальші дії:
+1) Прибрати стоп-слова
+2) tf-idf аналіз
+3) біграми - які словосполучення трапляються
+4) зв'язок біграм з назвою області
+
+# 1. Прибрати стоп-слова
+
+```{r}
+stopwords <- c("з","із","для","іп","та","по","і", "на", "від")
+df0 %>% 
+  unnest_tokens(word, 'Підприємство') %>% 
+  filter(!word %in% stopwords) %>% 
+  count(word, sort = T) %>% View()
+```
+
+# 3) біграми - які словосполучення трапляються
+
+```{r}
+df0 %>% 
+  unnest_tokens(bigram, 'Підприємство', token = "ngrams", n = 2) %>%
+  count(bigram, sort = T) %>% View()
+```
+
