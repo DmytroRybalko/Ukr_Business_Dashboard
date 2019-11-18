@@ -39,7 +39,7 @@ node2dataframe <- function(xml_doc, col_names, nodes, company_type) {
 }
 ```
 ## Test node2dataframe function
-```{r test_node2dataframe include=FALSE}
+```{r test_node2dataframe, include=FALSE}
 # Test file
 node2dataframe_data <- xmlParse("../data/test/base_data2.xml")
 
@@ -75,7 +75,7 @@ collect_nodes <- function(doc, col_names, nodes) {
 }
 ```
 ## Test collect_node function
-```{r test_collect_node include=FALSE}
+```{r test_collect_node, include=FALSE}
 # Test file
 collect_node_data <- xmlParse("../data/test/base_data2.xml")
 

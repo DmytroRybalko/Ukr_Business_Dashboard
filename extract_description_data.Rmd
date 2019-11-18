@@ -5,6 +5,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+options(digits = 9) # set significance number for round() function (digits = 7 by default)
 ```
 
 ```{r}
@@ -16,14 +17,14 @@ library(sf)
 ```
 Get data from tibble:
 ```{r}
-raw_data <- readRDS("../data/processing/raw_data.rds")
+raw_data <- readRDS("./data/processing/raw_data.rds")
 ```
 
 # 1.Geocoding
 
 ## Get data with region's names
 ```{r}
-regions_data <- readRDS("../data/raw/gadm36_UKR_1_sf.rds")
+regions_data <- readRDS("./data/raw/gadm36_UKR_1_sf.rds")
 ```
 Add ukrainians names of regions:
 ```{r}
@@ -39,27 +40,19 @@ regions_data$NL_NAME_1 <- c("Черкаська", "Чернігівська", " 
 
 ## Get regions according to places that contained in that regions
 ```{r}
-geocoding_data <- raw_data %>% 
+geocoding_data <- raw_data %>%
   rename(old_coordinates = coordinates) %>% 
-  mutate(coordinates = map(old_coordinates, function(x) {
-    
-    # get coordinates from string "\n  24.2609999,49.911092,0\n "
-    lon <- str_extract(x, "(\\d\\d.\\d+)") %>%
-      formatC(digits = 6, format = "f") %>% 
-      as.numeric()
-    lat <- str_extract(x, "(?<=,)(\\d\\d.\\d+)") %>%
-      formatC(digits = 6, format = "f") %>% 
-      as.numeric()
-    
-    # transform pair coordinates to point object
-    return(map2(lon, lat, ~st_point(c(.x, .y))) %>%
-           st_sfc(crs = 4326))
-    }),
-    
-    # find regions that contains corresponding points
-    region = map_chr(coordinates, .f = function(x) {
-      regions_data[which(st_intersects(regions_data$geometry, x, sparse = F)), ]$NL_NAME_1})) %>% 
-  select(-old_coordinates, coordinates)
+    mutate(longitude = str_extract(old_coordinates, "(\\d\\d.\\d+)") %>% 
+             as.numeric() %>% 
+             round(digits = 6),
+           latitude = str_extract(old_coordinates, "(?<=,)(\\d\\d.\\d+)") %>%
+             as.numeric() %>% 
+             round(digits = 6),
+           sf_coordinates = map2(longitude, latitude, ~st_point(c(.x, .y))) %>% 
+             st_sfc(crs = 4326), #-> test_df2
+           region = map_chr(sf_coordinates, .f = function(x) {
+             regions_data[which(st_intersects(regions_data$geometry, x, sparse = F)), ]$NL_NAME_1})) %>% 
+  select(-old_coordinates)
 ```
 
 # 2. Extract working places
@@ -99,10 +92,11 @@ work_data %>%
 
 ```{r}
 final_tibble <- investment_data %>% 
-  select(-description, - coordinates) %>% 
+  select(company_type, name, region:`investments, milliom UAH`, everything()) %>% 
+  select(-description) %>% 
   mutate_at(vars(name), funs(gsub("[\r\n]", "", .)))
 
-saveRDS(final_tibble, file = "../data/processing/final_data.rds")
+#saveRDS(final_tibble, file = "./data/processing/final_data.rds")
 ```
 
 Make tibble with Ukrainian titles:
@@ -122,19 +116,19 @@ final_tibble %>%
     "Others" = "Інші",
     "Livestock_Rooms" = "Тваринницькі приміщення")
     ) %>% 
-  saveRDS(file = "../data/processing/final_ukr_data.rds")
+  saveRDS(file = "./data/processing/final_ukr_data.rds")
 ```
 
 # 5. Write csv-file:
 
 ```{r}
-readRDS("../data/processing/final_data.rds") %>% 
-  write_delim("../data/processing/final_data.csv", delim = ";")
+#readRDS("./data/processing/final_data.rds") %>% 
+#  write_delim("./data/processing/final_data.csv", delim = ";")
 ```
 
 With Ukrainian titles:
 ```{r}
-readRDS("../data/processing/final_ukr_data.rds") %>% 
-  write_delim("../data/processing/final_ukr_data.csv", delim = ";")
+#readRDS("./data/processing/final_ukr_data.rds") %>% 
+#  write_delim("./data/processing/final_ukr_data.csv", delim = ";")
 ```
 
