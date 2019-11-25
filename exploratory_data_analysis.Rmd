@@ -1,0 +1,288 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.width = 9,
+                      fig.height = 7)
+```
+
+Тут будемо виконувати розвідувальний аналіз даних за допомогою пакета [DataExplorer](https://boxuancui.github.io/DataExplorer/index.html)  
+  
+```{r}
+library(tidyverse)
+library(DataExplorer)
+library(knitr)
+library(RColorBrewer)
+```
+
+Load data for explore:
+```{r}
+df0 <- readRDS("./data/processing/final_data.rds")
+select(df0, -sf_coordinates) -> df0
+```
+
+# Exploratory Data Analysis
+  
+Exploratory data analysis is the process to get to know your data, so that you can generate and test your hypothesis. Visualization techniques are usually applied.  
+  
+To get introduced to your newly created dataset:
+```{r}
+kable(t(introduce(df0)), row.names = TRUE, col.names = "", format.args = list(big.mark = ","))
+```
+To visualize the table above (with some light analysis):
+```{r}
+aa <- plot_intro(df0)
+aa
+```
+## Missing values  
+Real-world data is messy, and you can simply use plot_missing function to visualize missing profile for each feature.
+```{r}
+plot_missing(df0)
+```
+**Note:** You may store the missing data profile with profile_missing(final_data) for additional analysis.
+
+## Distributions
+
+### Bar charts  
+
+To visualize frequency distributions for all discrete features:
+```{r}
+plot_bar(df0)
+```
+Розподіл типів підприємств за кількістю
+```{r}
+df0 %>% 
+  group_by(company_type) %>% 
+  summarise(n = n()) %>% 
+  mutate(prop = n / sum(n)) %>% 
+  ggplot(aes(x = reorder(company_type, n), y = n, fill = company_type)) +
+    geom_bar(stat = 'identity', show.legend = F) +
+    coord_flip() +
+    labs(title = 'Розподіл типів підприємств за кількістю', x = NULL, y = NULL) +
+    geom_label(aes(label = scales::percent(prop)), hjust = 0.5, colour = "black", show.legend = F) +
+    scale_fill_brewer(palette = "Dark2") +
+    theme_classic() +
+    theme(panel.background = element_rect(fill = "white", color = "white"),
+          plot.title = element_text(face = "bold", hjust = 0.5),
+          axis.text = element_text(size = 11, colour = "black"),
+          axis.title = element_text(size = 12, face = "bold"))
+```
+Розподіл кількості підприємств за областями
+```{r fig.width = 9, fig.height = 7}
+df0 %>% 
+  group_by(region) %>% 
+  summarise(n = n()) %>% 
+  mutate(prop = n / sum(n)) %>% 
+  ggplot(aes(x = reorder(region, n), y = n, fill = region)) +
+    geom_bar(stat = 'identity', show.legend = F, fill = 'tomato2', width = 0.5) +
+    coord_flip() +
+    labs(title = 'Розподіл кількості підприємств за областями', x = NULL, y = NULL) +
+    geom_text(aes(label = scales::percent(prop)), hjust = -0.01, colour = "black", show.legend = F) +
+    theme_classic() +
+    theme(#panel.background = element_rect(fill = "white", color = "white"),
+          plot.title = element_text(face = "bold", hjust = 0.5),
+          axis.text = element_text(size = 11, colour = "black"),
+          axis.title = element_text(size = 12, face = "bold"))
+```
+Let's stack bar charts
+```{r fig.width = 9, fig.height = 7}
+ggplot(df0, aes(x = region, fill = company_type)) +
+  geom_bar(position = "fill", width = 0.8) +
+  coord_flip() +
+  labs(title = "Розподіл типів підприємств по областях", x = NULL, y = NULL, fill = NULL) +
+  scale_y_continuous(labels = scales::percent, expand = c(0.02, 0)) +
+  scale_fill_brewer(palette = "Dark2") +
+  theme_classic() +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text = element_text(size = 11, colour = "black"),
+    axis.title = element_text(size = 12, face = "bold")
+  )
+```
+
+Frequently, it is very beneficial to look at bivariate frequency distribution. For example, to look at discrete features by **investments**:
+```{r}
+plot_bar(df0, with = "investments, milliom UAH")
+```
+Розглянемо більш детально кожен графік.
+```{r}
+df0 %>% 
+  group_by(company_type) %>% 
+  summarise(Total_investment = sum(`investments, milliom UAH`, na.rm = T)) %>%  
+  mutate(prop = Total_investment / sum(Total_investment)) %>% 
+  ggplot(aes(x = reorder(company_type, Total_investment), y = Total_investment, fill = company_type)) +
+    geom_bar(stat = 'identity', show.legend = F) +
+    coord_flip() +
+    labs(title = 'Рейтинг типів підприємств за сумою інвестицій', y = 'Інвестиції, млр.грн', x = NULL) +
+    scale_y_continuous(labels = scales::comma_format(scale = .001)) +
+    geom_label(aes(label = scales::percent(prop)), hjust = 0.5, colour = "black", show.legend = F) +
+    scale_fill_brewer(palette = "Dark2") +
+    theme_classic() +
+    theme(panel.background = element_rect(fill = "white", color = "white"),
+          plot.title = element_text(face = "bold", hjust = 0.5),
+          axis.text = element_text(size = 11, colour = "black"),
+          axis.title = element_text(size = 12, face = "bold"))
+```
+
+```{r}
+df0 %>% 
+  group_by(region) %>% 
+  summarise(Total_investment = sum(`investments, milliom UAH`, na.rm = T)) %>%  
+  mutate(prop = Total_investment / sum(Total_investment)) %>% 
+  ggplot(aes(x = reorder(region, Total_investment), y = Total_investment, fill = region)) +
+    geom_bar(stat = 'identity', show.legend = F, fill = 'tomato2', width = 0.7) +
+    coord_flip() +
+    labs(title = 'Рейтинг областей за сумою інвестицій', y = 'Інвестиції, млр.грн', x = NULL) +
+    scale_y_continuous(labels = scales::comma_format(scale = .001), limits = c(0, 3e4), expand = c(0.02,0)) +
+    geom_text(aes(label = scales::percent(prop)), hjust = -0.01, colour = "black", show.legend = F) +
+    theme_classic() +
+    theme(panel.background = element_rect(fill = "white", color = "white"),
+          plot.title = element_text(face = "bold", hjust = 0.5),
+          axis.text = element_text(size = 11, colour = "black"),
+          axis.title = element_text(size = 12, face = "bold"))
+```
+... and by **working place**
+```{r}
+plot_bar(df0, with = "working_place")
+```
+Розглянемо більш детально кожен графік.
+```{r}
+df0 %>% 
+  group_by(company_type) %>% 
+  summarise(Total_workplace = sum(working_place, na.rm = T)) %>%  
+  mutate(prop = Total_workplace / sum(Total_workplace)) %>% 
+  ggplot(aes(x = reorder(company_type, Total_workplace), y = Total_workplace, fill = company_type)) +
+    geom_bar(stat = 'identity', show.legend = F) +
+    coord_flip() +
+    labs(title = 'Рейтинг типів підприємств за кількістю робочих місць', x = NULL, y = "Кількість робочих місць") +
+    geom_label(aes(label = scales::percent(prop)), hjust = 0.5, colour = "black", show.legend = F) +
+    scale_fill_brewer(palette = "Dark2") +
+    theme_classic() +
+    theme(panel.background = element_rect(fill = "white", color = "white"),
+          plot.title = element_text(face = "bold", hjust = 0.5),
+          axis.text = element_text(size = 11, colour = "black"),
+          axis.title = element_text(size = 12, face = "bold"))
+```
+По регіонах
+```{r}
+df0 %>% 
+  group_by(region) %>% 
+  summarise(Total_workplace = sum(working_place, na.rm = T)) %>%  
+  mutate(prop = Total_workplace / sum(Total_workplace)) %>% 
+  ggplot(aes(x = reorder(region, Total_workplace), y = Total_workplace, fill = region)) +
+    geom_bar(stat = 'identity', show.legend = F, fill = 'tomato2', width = 0.7) +
+    coord_flip() +
+    labs(title = 'Рейтинг областей за кількістю робочих місць', y = 'Кількість робочих місць', x = NULL) +
+    scale_y_continuous(expand = c(0.05, 0)) +
+    geom_text(aes(label = scales::percent(prop)), hjust = -0.01, colour = "black", show.legend = F) +
+    theme_classic() +
+    theme(panel.background = element_rect(fill = "white", color = "white"),
+          plot.title = element_text(face = "bold", hjust = 0.5),
+          axis.text = element_text(size = 11, colour = "black"),
+          axis.title = element_text(size = 12, face = "bold"))
+```
+
+### Boxplots  
+
+#### Boxplot for all avaliable rows with investment
+```{r}
+df0 %>% 
+  select(`investments, milliom UAH`) %>% 
+  na.omit() -> df_invest
+summary(df_invest)
+```
+
+```{r}
+ggplot(df_invest, aes(x = "1", y = `investments, milliom UAH`)) + 
+  geom_boxplot() +
+  geom_point() +
+  scale_y_continuous(trans = "log10",
+                     labels = scales::comma(quantile(df_invest$`investments, milliom UAH`, names = F)),
+                     breaks = quantile(df_invest$`investments, milliom UAH`, names = F)) +
+  labs(title = 'Розподіл інвестицій по країні вцілому', x = NULL) +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5))
+```
+#### Boxplot for all avaliable rows with working place  
+
+Get summary data
+```{r}
+df0 %>% 
+  select(working_place) %>% 
+  na.omit() -> df_work
+summary(df_work)
+```
+Make boxplot
+```{r}
+df_work %>%
+  ggplot(aes(x = "", y = working_place)) + 
+  geom_boxplot() +
+  geom_point() +
+  scale_y_log10(breaks = quantile(df_work$working_place, names = F)) +
+  labs(title = 'Розподіл робочих місць по країні вцілому', x = NULL) +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5))
+```
+
+### Розподіл інвестицій і робочих місць по регіонах. Загальна картина
+```{r}
+plot_boxplot(select(df0, -longitude, -latitude), by = "region")
+```
+Для подальшого аналізу будемо розглядати окремо інвестиції та робочі місця
+
+#### Розділимо регіони за сумою інвестицій на дві групи: топ-3 та всі інші
+Огляд топ-3 регіонів за кіль-тю інвестицій
+```{r}
+df0 %>% 
+  select(region, `investments, milliom UAH`) %>% 
+  filter(region %in% c("Херсонська", "Одеська", "Запорізька"),
+         !is.na(`investments, milliom UAH`)) %>% 
+  arrange(region) %>% 
+  ggplot(aes(x = region, y = `investments, milliom UAH`)) +
+  geom_boxplot() +
+  geom_point() +
+  coord_flip() +
+  scale_y_log10()
+```
+... та інших регіонів
+```{r}
+df0 %>% 
+  select(region, `investments, milliom UAH`) %>% 
+  filter(!(region %in% c("Херсонська", "Одеська", "Запорізька")),
+         !is.na(`investments, milliom UAH`)) %>% 
+  arrange(region) %>%  
+  ggplot(aes(x = region, y = `investments, milliom UAH`)) +
+  geom_boxplot() +
+  coord_flip(ylim = c(0, 1000))
+```
+
+#### Розділимо регіони за сумою інвестицій на дві групи: топ-3 та всі інші
+Огляд топ-4 регіонів за кіль-тю робочих місць:
+```{r}
+df0 %>% 
+  select(region, working_place) %>% 
+  filter(region %in% c("Вінницька", "Івано-Франківська", "Київська", "Львівська"),
+         !is.na(working_place)) %>% 
+  arrange(region) %>% 
+  ggplot(aes(x = region, y = working_place)) +
+  geom_boxplot() +
+  geom_point() +
+  coord_flip(ylim = (c(1, 2000)))
+```
+Огляд інших регіонів за кіль-тю робочих місць:
+```{r}
+df0 %>% 
+  select(region, working_place) %>% 
+  filter(!(region %in% c("Вінницька", "Івано-Франківська", "Київська", "Львівська")),
+         !is.na(working_place)) %>% 
+  arrange(region) %>% 
+  ggplot(aes(x = region, y = working_place)) +
+  geom_boxplot() +
+  coord_flip(ylim = c(0, 800))
+  #coord_cartesian(ylim = c(1, 800)) +
+```
+
+
+
