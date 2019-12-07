@@ -1,13 +1,16 @@
- ---
+---
 title: "Find out about Ukrainian companies opened since 2015"
-output:
+output: 
   flexdashboard::flex_dashboard:
-    css: css/style.css
-    orientation: column
+    orientation: columns
     vertical_layout: fill
+    css: css/style.css
 ---
 
 ```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 7,
+                      fig.height = 5)
+
 library(flexdashboard)
 library(tidyverse)
 library(DataExplorer)
@@ -29,19 +32,11 @@ Start here {data-orientation=rows}
 Row
 --------------------------------------------------------------------------------
 
-### Step 1 - Problem definition
+### Step 1 - About story
 
-Here is presented steps to analysing data about  
-bla-bla-bla  
-bla-bla-bla  
+<p style="font-size:25px;> On the right you can see a map with Ukrainian companies opened since 2015. Somehow I've decided to scrape information from the map into single table and explore it in details. In the following slides you can see what I could find out.</p>  
   
-Here is presented steps to analysing data about  
-bla-bla-bla  
-bla-bla-bla  
-  
-Here is presented steps to analysing data about  
-bla-bla-bla   
-bla-bla-bla
+<p style="font-size:25px;> For presentation of my work I choose [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/index.html) package that is the most suitable for data storytelling.</p>
 
 ### Step 2 - Get google map from [here](https://www.google.com/maps/d/u/0/viewer?mid=1kI7M2ngkfqQ78HuA0sCKGEaENzg&ll=50.060201820393054%2C30.57427020625005&z=9)
 
@@ -120,9 +115,9 @@ p21
 Column {.tabset}
 --------------------------------------------------------------------------------
 
-### Distribution by companies
+### Distribution by type of company
 
-```{r}
+```{r out.width="90%"}
 df0 %>% 
   group_by(company_type) %>% 
   summarise(n = n()) %>% 
@@ -143,7 +138,7 @@ p22
 
 ### Distribution by regions
 
-```{r}
+```{r out.width="90%"}
 df0 %>% 
   group_by(region) %>% 
   summarise(n = n()) %>% 
@@ -160,15 +155,15 @@ df0 %>%
 p23
 ```
 
-Розподіл інвестицій та робочих місць за типом підприємства та регіоном {data-orientation=rows}
+Distribution of intvestments and working places by companies and regions {data-orientation=rows}
 ================================================================================
 
 Row
 --------------------------------------------------------------------------------
 
-### Рейтинг типів підприємств за сумою інвестицій
+### Rating of the type of companies by amount of investment
 
-```{r}
+```{r out.width="90%"}
 df0 %>% 
   group_by(company_type) %>% 
   summarise(Total_investment = sum(`investments, milliom UAH`, na.rm = T)) %>%  
@@ -188,7 +183,7 @@ df0 %>%
 p31
 ```
 
-### Рейтинг типів підприємств за кількістю робочих місць
+### Rating of the type of companies by number of working places
 
 ```{r}
 df0 %>% 
@@ -212,7 +207,7 @@ p32
 Row
 --------------------------------------------------------------------------------
 
-### Рейтинг областей за сумою інвестицій
+### Rating of regions by amount of investment
 
 ```{r}
 df0 %>% 
@@ -233,7 +228,7 @@ df0 %>%
 p33
 ```
 
-### Рейтинг областей за кількістю робочих місць
+### Rating of regions by number of working places
 
 ```{r}
 df0 %>% 
