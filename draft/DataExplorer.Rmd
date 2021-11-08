@@ -1,0 +1,131 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.width = 9,
+                      fig.height = 7)
+```
+
+Тут будемо виконувати розвідувальний аналіз даних за допомогою пакета [DataExplorer](https://boxuancui.github.io/DataExplorer/index.html)  
+  
+```{r}
+library(tidyverse)
+library(DataExplorer)
+library(knitr)
+```
+
+Load data for explore:
+```{r}
+df0 <- readRDS("./data/processing/final_data.rds")
+select(df0, -sf_coordinates) -> df0
+```
+
+# Exploratory Data Analysis
+  
+Exploratory data analysis is the process to get to know your data, so that you can generate and test your hypothesis. Visualization techniques are usually applied.  
+  
+To get introduced to your newly created dataset:
+```{r}
+kable(t(introduce(df0)), row.names = TRUE, col.names = "", format.args = list(big.mark = ","))
+```
+To visualize the table above (with some light analysis):
+```{r}
+plot_intro(df0)
+```
+## Missing values  
+Real-world data is messy, and you can simply use plot_missing function to visualize missing profile for each feature.
+```{r}
+plot_missing(df0)
+```
+**Note:** You may store the missing data profile with profile_missing(final_data) for additional analysis.
+
+## Distributions
+
+### Bar charts  
+
+To visualize frequency distributions for all discrete features:
+```{r}
+plot_bar(df0)
+```
+Frequently, it is very beneficial to look at bivariate frequency distribution. For example, to look at discrete features by **investments**:
+```{r}
+plot_bar(df0, with = "investments, milliom UAH")
+```
+... and by **working place**
+```{r}
+plot_bar(df0, with = "working_place")
+```
+
+
+
+### Histograms
+To visualize distributions for all continuous features:
+```{r}
+plot_histogram(df0)
+```
+### QQ Plot  
+Quantile-Quantile plot is a way to visualize the deviation from a specific probability distribution. After analyzing these plots, it is often beneficial to apply mathematical transformation (such as log) for models like linear regression. To do so, we can use plot_qq function. By default, it compares with normal distribution.  
+
+**Note:** The function will take a long time with many observations, so you may choose to specify an appropriate sampled_rows.  
+  
+Show **investment** and **working_place**  columns:
+```{r}
+plot_qq(df0[,c("investments, milliom UAH", "working_place")])
+```
+Show **latitude** and **longitde** columns:
+```{r}
+plot_qq(df0[,c("latitude", "longitude")])
+```
+## Correlation Analysis  
+
+To visualize correlation heatmap for all non-missing features:
+```{r fig.width=12, fig.height=12}
+plot_correlation(na.omit(df0))
+```
+You may also choose to visualize only discrete features with:
+```{r fig.width=12, fig.height=12}
+plot_correlation(na.omit(df0), type = "d")
+```
+or continuous features with:
+```{r fig.width=8, fig.height=8}
+plot_correlation(na.omit(df0), type = "c")
+```
+Visualize only company_type and region:
+```{r fig.width=10, fig.height=10}
+cor(select(df0, company_type, region))
+```
+## Principal Component Analysis  
+
+While you can always do *plot_prcomp(na.omit(final_data))* directly, but PCA works better with cleaner data. To perform and visualize PCA on some selected features:
+
+## Slicing & dicing  
+
+Often, slicing and dicing data in different ways could be crucial to your analysis, and yields insights quickly.
+
+### Boxplots  
+
+You may visualize the distribution of all continuous features with a boxplot:
+```{r}
+plot_boxplot(select(df0, -longitude, -latitude), by = "region")
+```
+### Scatterplots  
+
+An alternative visualization is scatterplot. For example:
+```{r}
+plot_scatterplot(select(df0, region, `investments, milliom UAH`, working_place), by = "region")
+```
+
+# Data Reporting  
+
+To organize all the data profiling statistics into a report, you may use the *create_report* function. It will run most of the EDA functions and output a html file.
+```{r}
+# TAKE LONG TIME!!!
+# create_report(df0)
+```
+
+
+
+

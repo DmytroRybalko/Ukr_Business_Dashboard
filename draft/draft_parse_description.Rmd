@@ -1,0 +1,173 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(digits = 9) # set significance number for round() function (digits = 7 by default)
+```
+Check and set significance number of digits for round() function (digits = 7 by default)
+```{r}
+getOption("digits")
+```
+
+```{r}
+library(XML)
+library(rvest)
+library(tidyverse)
+library(stringr)
+library(sf)
+```
+Get data from the first description node:
+```{r}
+(xmlParse("./data/test/base_data2.xml") %>% 
+  getNodeSet("//Folder[@id='Future_Factories']//description", fun = xmlValue) %>% 
+   .[[3]] -> test_data)
+```
+Extract data about number of created woring places:
+```{r}
+str_extract(test_data, "Кількість робочих місць:(\\s\\d+)")
+```
+Extract data about amount of investments:
+```{r}
+str_extract(test_data, "Сума інвестицій:(\\s\\d+\\s[а-я]+..)")
+```
+
+```{r}
+raw_data <- readRDS("./data/processing/raw_data.rds")
+raw_data %>% 
+  mutate(working_place = str_extract(raw_data$description,
+                                     "Кількість робочих місць:(\\s\\d+)") %>%
+           str_extract('\\d+$'))
+```
+Extract info about investment:
+```{r}
+raw_data %>% 
+  mutate(investments = str_extract(raw_data$description, "(\\s\\d+\\s[а-я]+(.|\\s|.\\s)(грн|€|\\$))")) %>% 
+  mutate(investements_num = str_extract(investments, "\\d+")) %>% 
+  mutate(investements_vol = str_extract(investments, "(млн|тис)")) %>%
+  mutate(investements_vol = str_extract(investments, "(грн|€|\\$)")) %>% View()
+```
+The same via function
+```{r}
+raw_data %>% 
+  mutate(`investments, milliom UAH` = map(.$description, function(x) {
+        invest <- str_extract(x, "(\\s\\d+\\s[а-я]+(.|\\s|.\\s)(грн|€|\\$))")
+        # Get amount
+        amount <- str_extract(invest, "\\d+") %>% as.numeric()
+        # Get volume
+        volume <- str_extract(invest, "(млн|тис)")
+        # Correct amount depending on volume
+        amount <- ifelse(volume == "тис", amount * 0.001, amount)
+        # Get currency
+        currency <- str_extract(invest, "(грн|€|\\$)")
+        # Coerce amount to UAH  
+        amount <- ifelse(!is.na(currency), switch(currency,
+                                                  "$" = amount * 28,
+                                                  "€" = amount * 32,
+                                                  "грн" = amount),
+                         NA) %>% as.numeric()
+  }
+  )) %>% View()
+```
+
+# Geocoding 
+
+## Get data with region's names
+```{r}
+regions_data <- readRDS("./data/raw/gadm36_UKR_1_sf.rds")
+regions_data$NAME_1
+```
+Add ukrainians names of regions:
+```{r}
+regions_data$NL_NAME_1 <- c("Черкаська", "Чернігівська", " Чернівецька",
+                            "АР Крим", "Дніпропетровська", "Донецька",
+                            "Івано-Франківська", "Харківська", "Херсонська",
+                            "Хмельницька", "Київська", "Київ", "Кіровоградська",
+                            "Львівська", "Луганська", "Миколаївська", "Одеська", "Полтавська",
+                            "Рівненська", "Севастопіль", "Сумська", "Тернопільська",
+                            "Закарпатська", "Вінницька", "Волинська", "Запорізька",
+                            "Житомирська")
+```
+## Transform column with coordinates
+What is raw coordinate item?
+```{r}
+raw_data$coordinates[1]
+```
+How to get longitude (x)
+```{r}
+(x <- str_extract(raw_data$coordinates[1], "(\\d\\d.\\d+)"))
+```
+How to get latitude (y) 
+```{r}
+(y <- str_extract(raw_data$coordinates[1], "(?<=,)(\\d\\d.\\d+)"))
+```
+Get data fram with regions. Var 1:
+```{r}
+raw_data[1:10,] %>% 
+  rename(old_coordinates = coordinates) %>% 
+  mutate(longitude = str_extract(old_coordinates, "(\\d\\d.\\d+)") %>% 
+           as.numeric() %>% 
+           round(digits = 6),
+         latitude = str_extract(old_coordinates, "(?<=,)(\\d\\d.\\d+)") %>%
+           as.numeric() %>% 
+           round(digits = 6),
+         coordinates = map2(longitude, latitude, ~st_point(c(.x, .y))) %>% 
+           st_sfc(crs = 4326), #-> test_df2
+         region = map_chr(coordinates, .f = function(x) {
+           regions_data[which(st_intersects(regions_data$geometry, x, sparse = F)), ]$NL_NAME_1}))
+  #select(-old_coordinates)
+```
+Get data fram with regions. Var 2:
+```{r}
+raw_data[1:10,] %>% 
+  rename(old_coordinates = coordinates) %>% 
+  mutate(coordinates = map(old_coordinates, function(x) {
+    lon <- str_extract(x, "(\\d\\d.\\d+)") %>% 
+      as.numeric() %>% 
+      round(digits = 6)
+    
+    lat <- str_extract(x, "(?<=,)(\\d\\d.\\d+)") %>%
+      as.numeric() %>% 
+      round(digits = 6)
+    
+    return(map2(lon, lat, ~st_point(c(.x, .y))) %>%
+           st_sfc(crs = 4326))
+    }),
+    
+    region = map_chr(coordinates, .f = function(x) {
+      regions_data[which(st_intersects(regions_data$geometry, x, sparse = F)), ]$NL_NAME_1})) %>% View()
+```
+
+```{r}
+map1 <- readRDS("../../UKRmaps/sf/gadm36_UKR_0_sf.rds")
+map2 <- readRDS("../../UKRmaps/sf/gadm36_UKR_1_sf.rds")
+map3 <- readRDS("../../UKRmaps/sf/gadm36_UKR_2_sf.rds")
+```
+Make sf object from pairs of points:
+```{r}
+# Coordinates of Oster
+st_point(c(x = 30.845993, y = 50.948692)) %>% 
+  st_sfc(crs = 4326) -> oster_point
+
+# Coordinates of Dymer
+st_point(c(x = 30.261776, y = 50.779077)) %>% 
+  st_sfc(crs = 4326) -> dymer_point
+```
+
+```{r}
+(r1 <- st_intersects(map2[1:5,]$geometry, oster_point, sparse = F))
+```
+```{r}
+map2[which(r1), ]$NAME_1
+```
+
+```{r}
+(r2 <- st_contains(map2[2,]$geometry, dymer_point))
+```
+
+```{r}
+map2$geometry[2][[1]][[1]][[1]][1:10, ]
+```
+
